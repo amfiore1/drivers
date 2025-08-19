@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CData ODBC Guide</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 0; padding: 20px; line-height: 1.6; }
+  h1, h2, h3 { color: #0a4a7a; }
+  pre { background: #f4f4f4; padding: 10px; border-radius: 5px; overflow-x: auto; }
+  code { font-family: Consolas, monospace; }
+  .toc { background: #f9f9f9; border: 1px solid #ddd; padding: 10px; border-radius: 5px; margin-bottom: 20px; }
+  .toc h2 { margin-top: 0; }
+  .callout { border-left: 4px solid #0a4a7a; background: #eef7ff; padding: 10px; margin: 15px 0; }
+</style>
+</head>
+<body>
+  <h1>CData ODBC Guide</h1>
+  <p><em>How to install, configure, and use CData ODBC Drivers with Excel, Power BI, Tableau, C#, Python, and R.</em></p>
+
+  <div class="toc">
+    <h2>Contents</h2>
+    <ul>
+      <li><a href="#intro">1. Introduction</a></li>
+      <li><a href="#install">2. Installation</a></li>
+      <li><a href="#dsn">3. Create a DSN</a></li>
+      <li><a href="#tools">4. Using in Tools</a></li>
+      <li><a href="#code">5. Code Examples</a></li>
+      <li><a href="#troubleshoot">6. Troubleshooting</a></li>
+      <li><a href="#best">7. Best Practices</a></li>
+    </ul>
+  </div>
+
+  <h2 id="intro">1. Introduction</h2>
+  <p>CData ODBC Drivers let you connect SaaS, NoSQL, and big-data sources to ODBC-compliant tools (Excel, Power BI, Tableau) and programming languages (C#, Python, R). They expose your source as relational tables via SQL.</p>
+  <div class="callout"><strong>Tip:</strong> The same connection and query patterns apply to all CData ODBC drivers—only the connection properties change per source.</div>
+
+  <h2 id="install">2. Installation</h2>
+  <ol>
+    <li>Download the CData ODBC Driver for your source.</li>
+    <li>Run the installer (choose the 64‑bit build for modern BI tools).</li>
+    <li>Restart your ODBC tool if it was open during installation.</li>
+  </ol>
+
+  <h2 id="dsn">3. Create a DSN</h2>
+  <ol>
+    <li>Open <strong>ODBC Data Sources (64‑bit)</strong>.</li>
+    <li>Go to <em>System DSN</em> → <em>Add</em>.</li>
+    <li>Select your <strong>CData &lt;Source&gt; ODBC Driver</strong>.</li>
+    <li>Enter authentication details and test the connection.</li>
+  </ol>
+  <p><strong>DSN‑less alternative:</strong> embed all properties directly in the connection string (see examples below).</p>
+
+  <h2 id="tools">4. Using in Tools</h2>
+  <ul>
+    <li><strong>Excel:</strong> Data → Get Data → From ODBC → Select DSN.</li>
+    <li><strong>Power BI:</strong> Home → Get Data → ODBC → Select DSN.</li>
+    <li><strong>Tableau:</strong> Connect → To a Server → Other Databases (ODBC) → DSN.</li>
+  </ul>
+
+  <h2 id="code">5. Code Examples</h2>
+  <h3>C#</h3>
+  <pre><code>using System.Data.Odbc;
+var conn = new OdbcConnection("DSN=CDataSalesforce");
+conn.Open();
+var cmd = new OdbcCommand("SELECT Name FROM Account", conn);
+using var rdr = cmd.ExecuteReader();
+while (rdr.Read()) Console.WriteLine(rdr["Name"]);</code></pre>
+
+  <h3>Python (pyodbc)</h3>
+  <pre><code>import pyodbc
+conn = pyodbc.connect("DSN=CDataSalesforce")
+cur = conn.cursor()
+cur.execute("SELECT Name FROM Account")
+for row in cur.fetchall():
+    print(row.Name)</code></pre>
+
+  <h3>R</h3>
+  <pre><code>library(DBI)
+con <- dbConnect(odbc::odbc(), "CDataSalesforce")
+dbGetQuery(con, "SELECT Name FROM Account")</code></pre>
+
+  <h2 id="troubleshoot">6. Troubleshooting</h2>
+  <ul>
+    <li><strong>DSN not found</strong> → Ensure a 64‑bit <em>System DSN</em> and tool bitness matches (64‑bit Excel/Power BI).</li>
+    <li><strong>Auth fails</strong> → Verify connection properties (OAuth tokens, API keys, domains).</li>
+    <li><strong>Slow queries</strong> → Use <code>WHERE</code> filters, select only needed columns, enable caching if supported.</li>
+  </ul>
+
+  <h2 id="best">7. Best Practices</h2>
+  <ul>
+    <li>Use <strong>System DSNs</strong> for shared environments.</li>
+    <li>Filter and aggregate with SQL to push work down to the source.</li>
+    <li>Parameterize queries for reusability and security.</li>
+    <li>Document source-specific connection properties in an appendix.</li>
+  </ul>
+
+  <footer>
+    <p>© 2025 CData Software, Inc. · ODBC Guide · Last updated: Today</p>
+  </footer>
+</body>
+</html>
